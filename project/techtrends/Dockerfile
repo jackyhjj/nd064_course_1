@@ -2,7 +2,7 @@ FROM python:2.7
 
 EXPOSE 3111
 
-COPY ./techtrends/. /app
+COPY . /app
 
 WORKDIR /app
 
