@@ -1,0 +1,25 @@
+namespace:
+  name: staging 
+ 
+service:
+  port: 5111
+
+replicaCount: 3
+
+resources:
+  requests:
+    cpu: 300m
+    memory: 90Mi
+  limits:
+    cpu: 500m
+    memory: 128Mi
+
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: 3111
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 3111
