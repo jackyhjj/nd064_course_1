@@ -50,7 +50,7 @@ def index():
 def post(post_id):
     post = get_post(post_id)
     if post is None:
-        app.logger.info('Page not found - Return 404 Page')
+        app.logger.error('Page not found - Return 404 Page')
         return render_template('404.html'), 404
     else:
         app.logger.info('Article "{}" is retrieved!'.format(post['title']))
@@ -59,6 +59,7 @@ def post(post_id):
 # Define the About Us page
 @app.route('/about')
 def about():
+    app.logger.info('The "About Us" page is retrieved')
     return render_template('about.html')
 
 # Define the post creation functionality 
@@ -86,9 +87,10 @@ def healthz():
     connection = get_db_connection()
     response = app.response_class(
         response=json.dumps(
-        connection and {"result" : "OK - healthy"} or {"result" : "ERROR - unhealthy"}), 
-        status= connection and 200 or 500, 
-        mimetype="application/json")
+            connection and {"result" : "OK - healthy"} or {"result" : "ERROR - unhealthy"}), 
+            status= connection and 200 or 500, 
+            mimetype="application/json"
+        )
     return response
 
 @app.route('/metric')
