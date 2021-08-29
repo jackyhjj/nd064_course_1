@@ -8,10 +8,15 @@ from werkzeug.exceptions import abort
 # This function connects to database with the name `database.db`
 
 def get_db_connection():
-    connection = sqlite3.connect('database.db')
-    connection.row_factory = sqlite3.Row
+    try:
+        connection = sqlite3.connect('database.db')
+        connection.row_factory = sqlite3.Row
+        one_row = connection.execute("SELECT * FROM posts LIMIT 1;")
 
-    app.config["total_conn"] += 1
+        app.config["total_conn"] += 1
+    except Exception as ex:
+        app.logger.error("No database connection found! Contact admin")
+        return False
 
     return connection
 
@@ -78,9 +83,12 @@ def create():
 
 @app.route('/healthz')
 def healthz():
+    connection = get_db_connection()
     response = app.response_class(
-        response=json.dumps({"result" : "OK - healthy"}), status=200, mimetype="application/json")
-
+        response=json.dumps(
+        connection and {"result" : "OK - healthy"} or {"result" : "ERROR - unhealthy"}), 
+        status= connection and 200 or 500, 
+        mimetype="application/json")
     return response
 
 @app.route('/metric')
